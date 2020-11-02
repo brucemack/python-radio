@@ -6,6 +6,7 @@ import numpy as np
 # R1 - From base to ground
 # RE - Un-bypassed from emitter to ground
 
+# These are settings from EMRFD page 5.14
 Vcc = 12
 Rcc = 22
 Rf = 1500
@@ -13,12 +14,20 @@ R1 = 680
 Re = 47
 b = 100
 
+# Constants:
+# Vcc
+# Rcc (from Vcc to Vc)
+# Rf (from Vc to Vb)
+# R1 (from Vb to ground)
+# Re (from Ve to ground)
+# b (transistor beta)
+
 # Variables
 # 0: I1 (from Vcc to Vc)
 # 1: I2 (from Vb to ground)
-# 2: Ic (
-# 3: Ib
-# 4: Ie
+# 2: Ic (Collector current - inwards)
+# 3: Ib (Base current - inwards)
+# 4: Ie (Emitter current - outwards)
 # 5: Vc
 # 6: Vb
 # 7: Ve
