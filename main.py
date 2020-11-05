@@ -43,7 +43,7 @@ Ft = 300
 Fop = 7
 b = Ft / Fop
 
-ssr = calc_small_signal(Vin, Rs, Rf, R1, Re, Rl, br["Ie"], b)
+ssr = calc_small_signal(Rs, Rf, R1, Re, Rl, br["Ie"], b)
 
 print()
 print("Small Signal Analysis")
@@ -53,6 +53,7 @@ print("I1:", ssr["I1"])
 print("Ib:", ssr["Ib"])
 print("I3:", ssr["I3"])
 print("I4:", ssr["Il"])
+print("Ie:", ssr["Ie"])
 print("Vc:", ssr["Vc"])
 print("Vb:", ssr["Vb"])
 print("Ve:", ssr["Ve"])

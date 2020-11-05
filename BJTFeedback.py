@@ -94,7 +94,6 @@ def calc_bias(Vcc, Rcc, Rf, R1, Re, b0):
 # ----- Small signal analysis -----
 
 # Inputs:
-#   Vin - Input small signal
 #   Rs - Input source impedance
 #   Rf - Total feedback resistance
 #   R1 - From Vb to ground
@@ -112,9 +111,11 @@ def calc_bias(Vcc, Rcc, Rf, R1, Re, b0):
 #   Vc
 #   Vb
 #   Ve
+#   Ie - Current out of emitter towards ground via Re
 #
-def calc_small_signal(Vin, Rs, Rf, R1, Re, Rl, Ie, b):
+def calc_small_signal(Rs, Rf, R1, Re, Rl, Ie, b):
 
+    Vin = 1
     # Emitter resistor (26 / Ie_ma)
     re = 26 / (Ie * 1000)
 
@@ -169,6 +170,7 @@ def calc_small_signal(Vin, Rs, Rf, R1, Re, Rl, Ie, b):
         "Vc": v[5],
         "Vb": v[6],
         "Ve": v[7],
+        "Ie": v[2] + b * v[2],
         "gain": g,
         "zin": v[6] / v[0]
     }
