@@ -6,6 +6,7 @@ from util import *
 # small-signal (linear) analysis on a BJT amplifier with
 # feedback from the collector to the base.
 
+
 # ----- Bias Analysis ----------------------------------------------
 #
 # Inputs:
@@ -72,19 +73,19 @@ def calc_bias(Vcc, Rcc, Rf, R1, Re, b0):
     Y = np.array([Vcc, 0, 0, 0, 0.7, 0, 0, 0])
     # Invert and solve
     Mbias_inv = np.linalg.inv(Mbias)
-    vars = Mbias_inv.dot(Y)
+    v = Mbias_inv.dot(Y)
 
     result = {
-        "I1": vars[0],
-        "I2": vars[1],
-        "Ic": vars[2],
-        "Ib": vars[3],
-        "Ie": vars[4],
-        "Vc": vars[5],
-        "Vb": vars[6],
-        "Ve": vars[7],
-        "total_power": Vcc * vars[0],
-        "device_power": (vars[5] - vars[7]) * vars[4]
+        "I1": v[0],
+        "I2": v[1],
+        "Ic": v[2],
+        "Ib": v[3],
+        "Ie": v[4],
+        "Vc": v[5],
+        "Vb": v[6],
+        "Ve": v[7],
+        "total_power": Vcc * v[0],
+        "device_power": (v[5] - v[7]) * v[4]
         }
 
     return result
@@ -150,25 +151,25 @@ def calc_small_signal(Vin, Rs, Rf, R1, Re, Rl, Ie, b):
 
     yss = np.array([ Vin, 0, 0, 0, 0, 0, 0, 0 ])
     Mss_inv = np.linalg.inv(Mss)
-    vars = Mss_inv.dot(yss)
+    v = Mss_inv.dot(yss)
 
     # Available power (assuming load is matched with source resistance)
     Pav = ((Vin / (Rs + Rs)) ** 2) * Rs
     # Power delivered to load
-    Pout = ((vars[5] / Rl) ** 2) * Rl
+    Pout = ((v[5] / Rl) ** 2) * Rl
     # Gain in dB
     g = 10.0 * math.log10(Pout / Pav)
 
     result = {
-        "Iin": vars[0],
-        "I1": vars[1],
-        "Ib": vars[2],
-        "I3": vars[3],
-        "Il": vars[4],
-        "Vc": vars[5],
-        "Vb": vars[6],
-        "Ve": vars[7],
+        "Iin": v[0],
+        "I1": v[1],
+        "Ib": v[2],
+        "I3": v[3],
+        "Il": v[4],
+        "Vc": v[5],
+        "Vb": v[6],
+        "Ve": v[7],
         "gain": g,
-        "zin": vars[6] / vars[0]
+        "zin": v[6] / v[0]
     }
     return result
