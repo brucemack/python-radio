@@ -160,6 +160,8 @@ def calc_small_signal(Rs, Rf, R1, Re, Rl, Ie, b):
     Pout = ((v[5] / Rl) ** 2) * Rl
     # Gain in dB
     g = 10.0 * math.log10(Pout / Pav)
+    # Implied Re
+    re_implied = v[7] / (v[2] + b * v[2]);
 
     result = {
         "Iin": v[0],
@@ -172,6 +174,31 @@ def calc_small_signal(Rs, Rf, R1, Re, Rl, Ie, b):
         "Ve": v[7],
         "Ie": v[2] + b * v[2],
         "gain": g,
-        "zin": v[6] / v[0]
+        "zin": v[6] / v[0],
+        "re_implied": re_implied
     }
     return result
+
+
+# Computes the small-signal limit of the amplifier input,
+# taking into account device limitations.
+#
+# Inputs:
+#   vgap - The minimum required forward-bias voltage between
+#     the collector and the base of the device.
+#
+def small_signal_limit(bias_result, ss_result, vgap):
+
+    # Calculate the largest Vin can swing before the collector/base junction
+    # goes inside of the forward-bias gap
+    vin_max_0 = (vgap - bias_result["Vc"] + bias_result["Vb"]) / (ss_result["Vc"] - ss_result["Vb"])
+    vin_max_0 = math.fabs(vin_max_0)
+    print("vin_max_0", vin_max_0)
+
+    # Calculate the largest Vin can swing before the bias current is
+    # turned off.
+    vin_max_1 = bias_result["Ie"] / ss_result["Ie"]
+    vin_max_1 = math.fabs(vin_max_1)
+    print("vin_max_1", vin_max_1)
+
+    return min(vin_max_0, vin_max_1)

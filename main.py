@@ -59,3 +59,8 @@ print("Vb:", ssr["Vb"])
 print("Ve:", ssr["Ve"])
 print("Power gain (dB):", ssr["gain"])
 print("Zin (ohms):", ssr["zin"])
+print("Re implied (ohms):", ssr["re_implied"])
+
+print("Vin limit", small_signal_limit(br, ssr, 2))
+
+print(get_standard_resistors())
