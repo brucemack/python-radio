@@ -2,6 +2,10 @@ import numpy as np
 import math
 from util import *
 
+# This file contains the equations needed to do bias and
+# small-signal (linear) analysis on a BJT amplifier with
+# feedback from the collector to the base.
+
 # ----- Bias Analysis ----------------------------------------------
 #
 # Inputs:
@@ -86,3 +90,85 @@ def calc_bias(Vcc, Rcc, Rf, R1, Re, b0):
     return result
 
 
+# ----- Small signal analysis -----
+
+# Inputs:
+#   Vin - Input small signal
+#   Rs - Input source impedance
+#   Rf - Total feedback resistance
+#   R1 - From Vb to ground
+#   Re - Total resistance from Ve to ground
+#   Rl - Load resistance
+#   Ie - Bias current in Amps
+#   b - Small signal beta
+#
+# Outputs:
+#   Iin - Input current from source
+#   I1 - From Vb to ground via R1
+#   Ib - Into Vb
+#   I3 - From Vc to Vb via Rf
+#   Il - Current into the load
+#   Vc
+#   Vb
+#   Ve
+#
+def calc_small_signal(Vin, Rs, Rf, R1, Re, Rl, Ie, b):
+
+    # Emitter resistor (26 / Ie_ma)
+    re = 26 / (Ie * 1000)
+
+    # Equations
+    #
+    # 0: Vin = Rs * Iin + R1 * I1
+    # 1: Vb = R1 * I1
+    #    0 = -Vb + R1 * I1
+    # 2: Vb = re * Ib + b * re * Ib + Ve
+    #    0  = -Vb + (re + b * re) * Ib + Ve
+    # 3: Vc = Rf * I3 + Vb
+    #    0 = -Vc + Rf * I3 + Vb
+    # 4: Ve = Re * Ib + (Re * b) * Ib
+    #    0 = -Ve + (Re + Re * b) * Ib
+    # 5: Vc = Rl * I4
+    #    0 = -Vc + Rl * I4
+    # 6: -I4 = I3 + b * Ib
+    #    0 = I4 + I3 + b * Ib
+    # 7: Iin + I3 = Ib + I1
+    #    0 = -Iin -I3 + Ib + I1
+
+    Mss = np.array([
+    # Iin, I1,  Ib,  I3,  I4,  Vc,  Vb,  Ve
+
+    [ Rs,  R1,  0,   0,   0,   0,   0,   0 ],
+    [ 0,   R1,  0,   0,   0,   0,   -1,  0 ],
+    [ 0,   0, re+re*b, 0, 0,   0,   -1,  1 ],
+    [ 0,   0,   0,   Rf,  0,   -1,  1,   0 ],
+    [ 0,   0, Re+Re*b, 0, 0,   0,   0,   -1 ],
+    [ 0,   0,   0,   0,   Rl,  -1,  0,   0  ],
+    [ 0,   0,   b,   1,   1,   0,   0,   0  ],
+    [ -1,  1,   1,   -1,  0,   0,   0,   0  ]
+    ])
+
+    yss = np.array([ Vin, 0, 0, 0, 0, 0, 0, 0 ])
+    Mss_inv = np.linalg.inv(Mss)
+    vars = Mss_inv.dot(yss)
+
+    # Available power (assuming load is matched with source resistance)
+    Pav = ((Vin / (Rs + Rs)) ** 2) * Rs
+    # Power delivered to load
+    Pout = ((vars[5] / Rl) ** 2) * Rl
+    # Gain in dB
+    g = 10.0 * math.log10(Pout / Pav)
+
+    result = {
+        "Iin": vars[0],
+        "I1": vars[1],
+        "Ib": vars[2],
+        "I3": vars[3],
+        "Il": vars[4],
+        "Vc": vars[5],
+        "Vb": vars[6],
+        "Ve": vars[7],
+        "gain": g,
+        "zin": vars[6] / vars[0]
+    }
+    return result
