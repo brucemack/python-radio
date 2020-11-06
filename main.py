@@ -82,7 +82,7 @@ Rf = 1500
 b0 = 100
 # Target bias points
 Ve_target = Vcc / 3
-Ie_target = 0.015
+Ie_target = 0.025
 # Figure out the un-bypassed emitter resistor in order to hit
 # the Ve target
 Re_unbypassed = standardize_resistor(Ve_target / Ie_target)
@@ -95,11 +95,12 @@ br = calc_bias(Vcc, Rcc, Rf, R1, Re_unbypassed, b0)
 
 print("Bias Analysis:")
 print()
-print("Ve_target:", Ve_target)
-print("Ie_target:", Ie_target)
-print("R1 in order to hit Vb_target:", R1)
-print("I1:", br["I1"])
-print("I2:", br["I2"])
+print("Ve_target               :", Ve_target)
+print("Ie_target               :", Ie_target)
+print("R1 chosen for Vb_target :", R1)
+print("Re chosen for Ve_target :", Re_unbypassed)
+print("I1                      :", br["I1"])
+print("I2                      :", br["I2"])
 print("Ic:", br["Ic"])
 print("Ib:", br["Ib"])
 print("Ie:", br["Ie"])
@@ -107,7 +108,7 @@ print("Vc:", br["Vc"])
 print("Vb:", br["Vb"])
 print("Ve:", br["Ve"])
 print("Power usage (W):", br["total_power"])
-print("Ve/Vcc (should be about 25%):", br["Ve"] / br["Vc"])
+print("Ve/Vcc (should be about 30%):", br["Ve"] / br["Vc"])
 print("Vc-Ve:", br["Vc"] - br["Ve"])
 
 # ----- Small signal analysis -----
