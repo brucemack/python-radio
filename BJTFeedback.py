@@ -193,12 +193,10 @@ def small_signal_limit(bias_result, ss_result, vgap):
     # goes inside of the forward-bias gap
     vin_max_0 = (vgap - bias_result["Vc"] + bias_result["Vb"]) / (ss_result["Vc"] - ss_result["Vb"])
     vin_max_0 = math.fabs(vin_max_0)
-    print("vin_max_0", vin_max_0)
 
     # Calculate the largest Vin can swing before the bias current is
     # turned off.
     vin_max_1 = bias_result["Ie"] / ss_result["Ie"]
     vin_max_1 = math.fabs(vin_max_1)
-    print("vin_max_1", vin_max_1)
 
     return min(vin_max_0, vin_max_1)

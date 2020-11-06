@@ -1,6 +1,6 @@
 import unittest
 from BJTFeedback import *
-
+from util import *
 
 class UnitTests1(unittest.TestCase):
 
@@ -12,6 +12,13 @@ class UnitTests1(unittest.TestCase):
         ssr = calc_small_signal(50, 1300, 1000, 6, 200, 0.020, 21)
         self.assertAlmostEqual(ssr["gain"], 20, places=0)
 
+    def testStandard(self):
+        sr = standardize_resistor(850)
+        # Goes down
+        self.assertAlmostEqual(820, sr, places=0)
+        sr = standardize_resistor(320)
+        # Goes up
+        self.assertAlmostEqual(330, sr, places=0)
 
 if __name__ == '__main__':
     unittest.main()

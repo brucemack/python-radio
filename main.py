@@ -78,23 +78,26 @@ print("===== Example 2 =====")
 Vcc = 12
 Rcc = 22
 Rf = 1500
+# DC beta
 b0 = 100
-
-Ie_target = 0.015
+# Target bias points
 Ve_target = Vcc / 3
-# Figure out the unbypassed emitter resistor in order to hit
+Ie_target = 0.015
+# Figure out the un-bypassed emitter resistor in order to hit
 # the Ve target
-Re_unbypassed = Ve_target / Ie_target
-Vb_target = Ve_target + 0.7
+Re_unbypassed = standardize_resistor(Ve_target / Ie_target)
 # Figure out R1 in order to hit the Vb_target (assuming Rf and R1
-# form a voltage divider)
-R1 = (Vb_target * Rf) / (Vcc - Vb_target)
-print("R1 in order to hit Vb_target:", R1)
+# form a voltage divider and the base current is negligible)
+Vb_target = Ve_target + 0.7
+R1 = standardize_resistor((Vb_target * Rf) / (Vcc - Vb_target))
 
 br = calc_bias(Vcc, Rcc, Rf, R1, Re_unbypassed, b0)
 
 print("Bias Analysis:")
 print()
+print("Ve_target:", Ve_target)
+print("Ie_target:", Ie_target)
+print("R1 in order to hit Vb_target:", R1)
 print("I1:", br["I1"])
 print("I2:", br["I2"])
 print("Ic:", br["Ic"])
@@ -109,9 +112,11 @@ print("Vc-Ve:", br["Vc"] - br["Ve"])
 
 # ----- Small signal analysis -----
 
-Re = parallel_r(Re_unbypassed, 6.8)
+Re_bypassed = 5.6
+Re = parallel_r(Re_unbypassed, Re_bypassed)
+# Source driving impedance
 Rs = 50
-# Transformer
+# Load impedance (possibly via transformer)
 Rl = 200
 # Beta components
 Ft = 300
@@ -123,19 +128,18 @@ ssr = calc_small_signal(Rs, Rf, R1, Re, Rl, br["Ie"], b)
 print()
 print("Small Signal Analysis")
 print()
-print("Iin:", ssr["Iin"])
-print("I1:", ssr["I1"])
-print("Ib:", ssr["Ib"])
-print("I3:", ssr["I3"])
-print("I4:", ssr["Il"])
-print("Ie:", ssr["Ie"])
-print("Vc:", ssr["Vc"])
-print("Vb:", ssr["Vb"])
-print("Ve:", ssr["Ve"])
-print("Power gain (dB):", ssr["gain"])
-print("Zin (ohms):", ssr["zin"])
-print("Re implied (ohms):", ssr["re_implied"])
-
-print("Vin limit", small_signal_limit(br, ssr, 2))
+print("Iin/Vin           :", ssr["Iin"])
+print("I1/Vin            :", ssr["I1"])
+print("Ib/Vin            :", ssr["Ib"])
+print("I3/Vin            :", ssr["I3"])
+print("I4/Vin            :", ssr["Il"])
+print("Ie/Vin            :", ssr["Ie"])
+print("Vc/Vin            :", ssr["Vc"])
+print("Vb/Vin            :", ssr["Vb"])
+print("Ve/Vin            :", ssr["Ve"])
+print("Power gain (dB)   :", ssr["gain"])
+print("Zin (ohms)        :", ssr["zin"])
+print("Re implied (ohms) :", ssr["re_implied"])
+print("Vin limit         :", small_signal_limit(br, ssr, 2))
 
 
