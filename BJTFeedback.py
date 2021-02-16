@@ -73,19 +73,23 @@ def calc_bias(Vcc, Rcc, Rf, R1, Re, b0):
     Y = np.array([Vcc, 0, 0, 0, 0.7, 0, 0, 0])
     # Invert and solve
     Mbias_inv = np.linalg.inv(Mbias)
-    v = Mbias_inv.dot(Y)
+    a = Mbias_inv.dot(Y)
 
     result = {
-        "I1": v[0],
-        "I2": v[1],
-        "Ic": v[2],
-        "Ib": v[3],
-        "Ie": v[4],
-        "Vc": v[5],
-        "Vb": v[6],
-        "Ve": v[7],
-        "total_power": Vcc * v[0],
-        "device_power": (v[5] - v[7]) * v[4]
+        "I1": a[0],
+        "I2": a[1],
+        "Ic": a[2],
+        "Ib": a[3],
+        "Ie": a[4],
+        "Vc": a[5],
+        "Vb": a[6],
+        "Ve": a[7],
+        "total_power": Vcc * a[0],
+        "device_power": (a[5] - a[7]) * a[4],
+        "Rcc_power": (a[0] * a[0]) * Rcc,
+        "Rf_power": (a[5] - a[6]) * (a[5] - a[6]) / Rf,
+        "R1_power": (a[6] * a[6]) / R1,
+        "Re_power": (a[7] * a[7]) / Re
         }
 
     return result
